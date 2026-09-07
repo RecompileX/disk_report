@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <utility>
 #include <iostream>
 
 namespace fs = std::filesystem;
@@ -46,11 +47,13 @@ int main(){
                 fileExtensionAmount.push_back(1);
             }
         }
-        // finsih this
-        auto directoriesCopy = directories;
-        for (int x = 0; x < directories.size(); x++) {
-            std::string directoriesTMP;
-            directoriesTMP = directories[x];
+        auto directoriesCopy = std::move(directories);
+        directories.clear();
+        for (int x = 0; x < directoriesCopy.size(); x++) {
+            fs::path p = directoriesCopy[x];
+            p.replace_extension();
+            std::string directoriesTMP = p.string();
+            fileExists = false;
             for (int a = 0; a < directories.size(); a++) {
                 fileExists = false;
                 if (directories[a] == directoriesTMP) {
@@ -65,9 +68,9 @@ int main(){
         }
         std::cout << "Directories:" << std::endl;
         for (int x = 0; x < directories.size(); x++) {
-            std::cout << (directories[x].substr(0, directories[x].rfind('.'))) << std::endl;
+            std::cout << directories[x] << std::endl;
         }
-        std::cout << "End Directories" << std::endl;
+        std::cout << "End Directories" << std::endl << std::endl;
 
         std::cout << "File Extensions:" << std::endl;
         for (int x = 0; x < fileExtension.size(); x++) {
