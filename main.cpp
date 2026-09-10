@@ -1,3 +1,4 @@
+#define BTOGB 1073741824
 #include <filesystem>
 #include <iostream>
 #include <vector>
@@ -8,9 +9,20 @@
 
 namespace fs = std::filesystem;
 
+enum state {
+    START,
+    SPACE,
+    EXTENSIONS,
+    AVAILABLE,
+    DIRECTORIES_SPACE,
+    TOP3
+};
+
 int main(){
     std::cout << "Welcome to disk report." << std::endl;
+
     start:
+    state programState = START;
     std::cout << "What directories would you like to scan today?" << std::endl;
     std::string targetDir = "-1";
     std::cin >> targetDir;
@@ -23,11 +35,10 @@ int main(){
 
     if(fs::exists(targetDir) && targetDir != "-1") {
         for(const auto& dir : fs::recursive_directory_iterator(targetDir)){
-
             if (!fs::is_directory(dir)) {
                 files.push_back(dir.path().string());
             }
-                else if(fs::is_directory(dir)) {
+                else if(fs::is_directory(dir) && !fs::is_empty(dir.path())) {
                 directories.push_back(dir.path().string());
             }
         }
@@ -74,7 +85,7 @@ int main(){
 
         std::cout << "File Extensions:" << std::endl;
         for (int x = 0; x < fileExtension.size(); x++) {
-            std::cout << fileExtension[x] << ' ' <<fileExtensionAmount[x] << std::endl;
+            std::cout << fileExtension[x] << ' ' << fileExtensionAmount[x] << std::endl;
         }
         std::cout << "End File Extensions" << std::endl;
     }
