@@ -1,4 +1,6 @@
-#define BTOGB 1073741824
+#define btogib 1073741824
+#define btogb 1000000000
+#define btomb 1000000
 #include <filesystem>
 #include <iostream>
 #include <vector>
@@ -6,8 +8,14 @@
 #include <algorithm>
 #include <utility>
 #include <iostream>
+#include <iomanip>
+#include <cstdint>
+#include <memory>
+#define FTXUI_IMPLEMENTATION
+#include "ftxui_all.hpp"
 
 namespace fs = std::filesystem;
+using namespace ftxui;
 
 enum state {
     START,
@@ -15,33 +23,63 @@ enum state {
     EXTENSIONS,
     AVAILABLE,
     DIRECTORIES_SPACE,
-    TOP3
+    TOP3D,
+    TOP3F
 };
 
 int main(){
     std::cout << "Welcome to disk report." << std::endl;
+    std::vector<std::string> entries = {
+      "SPACE",
+      "EXTENSIONS",
+      "AVAILABLE",
+      "DIRECTORIES_SPACE",
+      "TOP3D",
+      "TOP3F"
+    };
 
     start:
-    state programState = START;
+    int selected = 0;
+    auto menu = Menu(&entries, &selected);
+    auto component = menu | border;
+    auto app = App::TerminalOutput();
+    app.Loop(component);
+    state programState = DIRECTORIES_SPACE;
     std::cout << "What directories would you like to scan today?" << std::endl;
     std::string targetDir = "-1";
-    std::cin >> targetDir;
+    std::getline(std::cin, targetDir);
+
+    if (targetDir.rfind("--exit") != std::string::npos || targetDir.rfind("--e") != std::string::npos) {
+        return 0;
+    }
 
     bool fileExists = false;
     std::vector<std::string> directories;
     std::vector<std::string> files;
     std::vector<std::string> fileExtension;
     std::vector<int> fileExtensionAmount;
+    std::vector<std::pair<std::string,int>> fileStorage;
+    float directorySize = 0;
+    float fileSize = 0;
 
     if(fs::exists(targetDir) && targetDir != "-1") {
         for(const auto& dir : fs::recursive_directory_iterator(targetDir)){
             if (!fs::is_directory(dir)) {
                 files.push_back(dir.path().string());
+                fileStorage.push_back(std::make_pair(dir.path().string(),fs::file_size(dir)));
             }
-                else if(fs::is_directory(dir) && !fs::is_empty(dir.path())) {
+            else if(fs::is_directory(dir) && !fs::is_empty(dir.path())) {
                 directories.push_back(dir.path().string());
             }
+            if (targetDir.rfind("--dirsp")) {
+                if (std::filesystem::is_regular_file(dir) && programState == DIRECTORIES_SPACE) {
+                    float fileSize = fs::file_size(dir);
+                    directorySize += fileSize / btogib;
+                }
+            }
+
         }
+
         for (int x = 0; x < files.size(); x++){
             std::string fileExtensionsTMP;
             fileExtensionsTMP = fs::path(files[x]).extension().string();
@@ -87,7 +125,19 @@ int main(){
         for (int x = 0; x < fileExtension.size(); x++) {
             std::cout << fileExtension[x] << ' ' << fileExtensionAmount[x] << std::endl;
         }
-        std::cout << "End File Extensions" << std::endl;
+        std::cout << "End File Extensions" << std::endl << std::endl;
+        switch (programState) {
+
+            case START:
+                std::cout << "Error program state is invalid." << std::endl;
+                break;
+
+            case DIRECTORIES_SPACE:
+            std::cout << "Directory Size: " << std::fixed << std::setprecision(2) << directorySize << " Gib" << std::endl;
+
+            default:
+                break;
+        }
     }
     else{
         std::cout << "Invalid Directory!" << std::endl;
