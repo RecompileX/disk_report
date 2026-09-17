@@ -7,7 +7,6 @@
 #include <string>
 #include <algorithm>
 #include <utility>
-#include <iostream>
 #include <iomanip>
 #include <cstdint>
 #include <memory>
@@ -36,22 +35,37 @@ int main(){
       "DIRECTORIES_SPACE",
       "TOP3D",
       "TOP3F"
-    };
+    };  
 
     start:
-    int selected = 0;
-    auto menu = Menu(&entries, &selected);
-    auto component = menu | border;
-    auto app = App::TerminalOutput();
+std::string targetDir;
+int selected = 0;
+auto screen = ScreenInteractive::TerminalOutput();
+auto menu = Menu(&entries, &selected);
+auto input = Input(&targetDir, "Directory");
+
+auto component = Container::Vertical({
+    input,
+    menu
+    }) | border;
+
+auto app = App::TerminalOutput();
+
+component = component | CatchEvent([&](Event event) {
+    if (event == Event::Return) {
+        screen.ExitLoopClosure()();
+        return true;
+    }
+    return false;
+    });
+
+screen.Loop(component);
+system("cls");
+
+
     app.Loop(component);
     state programState = DIRECTORIES_SPACE;
     std::cout << "What directories would you like to scan today?" << std::endl;
-    std::string targetDir = "-1";
-    std::getline(std::cin, targetDir);
-
-    if (targetDir.rfind("--exit") != std::string::npos || targetDir.rfind("--e") != std::string::npos) {
-        return 0;
-    }
 
     bool fileExists = false;
     std::vector<std::string> directories;
