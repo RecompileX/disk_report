@@ -11,10 +11,9 @@
 #include <cstdint>
 #include <memory>
 #define FTXUI_IMPLEMENTATION
-#include "ftxui_all.hpp"
+#include "skcui.hpp"
 
 namespace fs = std::filesystem;
-using namespace ftxui;
 
 enum state {
     START,
@@ -27,7 +26,8 @@ enum state {
 };
 
 int main(){
-    std::cout << "Welcome to disk report." << std::endl;
+    const std::string title = "Welcome to disk report.";
+    std::cout << title << std::endl;
     std::vector<std::string> entries = {
       "SPACE",
       "EXTENSIONS",
@@ -38,34 +38,17 @@ int main(){
     };  
 
     start:
-std::string targetDir;
-int selected = 0;
-auto screen = ScreenInteractive::TerminalOutput();
-auto menu = Menu(&entries, &selected);
-auto input = Input(&targetDir, "Directory");
+    std::string targetDir;
+    int selected = 0;
 
-auto component = Container::Vertical({
-    input,
-    menu
-    }) | border;
+    skcui::menu(selected, entries, title);
+    skcui::clearScreen();
 
-auto app = App::TerminalOutput();
-
-component = component | CatchEvent([&](Event event) {
-    if (event == Event::Return) {
-        screen.ExitLoopClosure()();
-        return true;
-    }
-    return false;
-    });
-
-screen.Loop(component);
-system("cls");
-
-
-    app.Loop(component);
     state programState = DIRECTORIES_SPACE;
-    std::cout << "What directories would you like to scan today?" << std::endl;
+    std::cout << "What directories would you like to scan today?" << std::endl << std::endl;
+    std::cout << "Currently selected option: " << entries[selected] << std::endl << std::endl;
+    std::cout << "Enter 'exit' or 'back' to return to main menu." << std::endl;
+    std::getline(std::cin, targetDir);
 
     bool fileExists = false;
     std::vector<std::string> directories;
