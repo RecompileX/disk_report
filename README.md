@@ -1,4 +1,4 @@
-\# Disk Report
+# Disk Report
 
 
 
@@ -6,37 +6,37 @@ A simple C++ terminal utility for analyzing disk usage.
 
 
 
-\## Features
+## Features
 
 
 
-\* Disk capacity
+* Disk capacity
 
-\* Available space
+* Available space
 
-\* Directory size
+* Directory size
 
-\* File extension counts
+* File extension counts
 
-\* Top 3 largest files
+* Top 3 largest files
 
-\* GiB, GB, and MB units
+* GiB, GB, and MB units
 
-\* Interactive keyboard navigation
-
-
-
-\## Requirements
+* Interactive keyboard navigation
 
 
 
-\* C++17
-
-\* `skcui.hpp`
+## Requirements
 
 
 
-\## Build
+* C++17
+
+* `skcui.hpp`
+
+
+
+## Build
 
 
 
@@ -46,11 +46,11 @@ g++ -std=c++17 main.cpp -o disk\_report
 
 ```
 
-or use the provide cmake build file.
+or use the provided cmake build file.
 
 
 
-\## Usage
+## Usage
 
 
 
@@ -58,7 +58,7 @@ Run `disk\_report`, select an option, and enter the directory you want to scan.
 
 
 
-Use \*\*↑ / ↓\*\* to navigate and \*\*Enter\*\* to select.
+Use **↑ / ↓** to navigate and **Enter** to select.
 
 
 
