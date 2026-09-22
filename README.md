@@ -46,9 +46,14 @@ g++ -std=c++17 main.cpp -o disk\_report
 
 ```
 
-or use the provided cmake build file.
+or
 
+```bash
 
+cmake -S . -B build
+cmake --build build
+
+```
 
 ## Usage
 
