@@ -1,3 +1,0 @@
-C:/c++/c-- projects/disk_report/out/build/x64-Debug/CMakeFiles/disk_report.dir
-C:/c++/c-- projects/disk_report/out/build/x64-Debug/CMakeFiles/edit_cache.dir
-C:/c++/c-- projects/disk_report/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
