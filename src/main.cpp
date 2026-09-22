@@ -1,6 +1,6 @@
-#define btogib 1073741824.0f
-#define btogb 1000000000.0f
-#define btomb 1000000.0f
+#define btogib 1073741824.0
+#define btogb 1000000000.0
+#define btomb 1000000.0
 #include <filesystem>
 #include <iostream>
 #include <vector>
@@ -36,9 +36,7 @@ int main()
     };
 
     std::vector<std::string> entriesType{"GiB","GB","MB"};
-
-    std::vector<std::pair<std::string, int>> fileSizeName;
-
+    
     start:
     state programState = START;
     std::string targetDir;
@@ -50,13 +48,6 @@ int main()
     int selectedType = 0;
 
     float type = btogb;
-
-    if (selectedType == 0)
-        type = btogib;
-    else if (selectedType == 1)
-        type = btogb;
-    else if (selectedType == 2)
-        type = btomb;
 
     std::cout << "What directories would you like to scan today?" << std::endl << std::endl;
     std::cout << "Currently selected option: " << entries[selected] << std::endl << std::endl;
@@ -83,14 +74,20 @@ int main()
     if (programState != EXTENSIONS )
         skcui::menu(selectedType, entriesType, "Which type of measurement would you like to be displayed?");
     skcui::clearScreen();
+    if (selectedType == 0)
+        type = btogib;
+    else if (selectedType == 1)
+        type = btogb;
+    else if (selectedType == 2)
+        type = btomb;
 
     bool fileExists = false;
     std::vector<std::string> directories;
     std::vector<std::string> files;
     std::vector<std::string> fileExtension;
     std::vector<int> fileExtensionAmount;
-    std::vector<std::pair<std::string,int>> fileStorage;
-    float directorySize = 0.0f;
+    std::vector<std::pair<std::string, float>> fileStorage;
+    float directorySize = 0.0;
 
     if(fs::exists(targetDir) && targetDir != "-1") {
         for(const auto& dir : fs::recursive_directory_iterator(targetDir)){
@@ -98,7 +95,7 @@ int main()
                 files.push_back(dir.path().string());
                 fileStorage.push_back(std::make_pair(dir.path().string(),fs::file_size(dir)));
             }
-            else if(fs::is_directory(dir) && !fs::is_empty(dir.path())) {
+            if(fs::is_directory(dir) && !fs::is_empty(dir.path())) {
                     directories.push_back(dir.path().string());
             }
             if (std::filesystem::is_regular_file(dir) && programState == DIRECTORIES_SPACE) {
@@ -159,22 +156,22 @@ int main()
             break;
 
             case AVAILABLE:
-                std::cout << "Available space: " << std::fixed << std::setprecision(2) << fs::space_info().free / type << " "  << entriesType[selectedType];
+                std::cout << "Available space: " << std::fixed << std::setprecision(2) << fs::space(targetDir).free / type << " "  << entriesType[selectedType];
             break;
 
             case SPACE:
-                std::cout << "Available space: " << std::fixed << std::setprecision(2) << fs::space_info().capacity / type << " "  << entriesType[selectedType];
+                std::cout << "Available space: " << std::fixed << std::setprecision(2) << fs::space(targetDir).capacity / type << " "  << entriesType[selectedType];
             break;
 
             case TOP3F:
                 std::cout << "Top 3 files and their names:" << std::endl;
-                std::sort(fileSizeName.begin(), fileSizeName.end(),
+                std::sort(fileStorage.begin(), fileStorage.end(),
                     [](const auto& a, const auto& b) {return a.second > b.second;});
-                fileSizeName.resize(3);
-                for (int x = 0; x < fileSizeName.size(); x++)
+                fileStorage.resize(3);
+                for (int x = 0; x < fileStorage.size(); x++)
                 {
-                    std::cout << fileSizeName[x].first << " ";
-                    std::cout << fileSizeName[x].second / type << " " << entriesType[selectedType] << std::endl;
+                    std::cout << fileStorage[x].first << " ";
+                    std::cout << fileStorage[x].second / type << " " << entriesType[selectedType] << std::endl;
 
                 }
         }
