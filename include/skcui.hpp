@@ -68,7 +68,6 @@ inline char getKey()
 
 namespace skcui {
 
-
 	inline void clearScreen() {
         #ifdef _WIN32
             system("cls");
@@ -77,8 +76,13 @@ namespace skcui {
         #endif
 	}
 
-	inline void menu(int& selected, const std::vector<std::string>& options, const std::optional<std::string_view> title = std::nullopt, const std::optional<std::string_view> desc = std::nullopt) {
-		selected = 0;
+	inline void menu(
+	    int& selected,
+	    const std::vector<std::string>& options,
+	    const std::optional<std::string_view> title = std::nullopt,
+	    const std::optional<std::string_view> desc = std::nullopt
+	    ) {
+	    selected = 0;
 		bool running = true;
 
         loop:		
